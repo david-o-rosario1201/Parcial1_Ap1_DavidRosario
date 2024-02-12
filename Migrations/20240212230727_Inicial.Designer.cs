@@ -11,7 +11,7 @@ using Parcial1_Ap1_DavidRosario.DAL;
 namespace Parcial1_Ap1_DavidRosario.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20240212225017_Inicial")]
+    [Migration("20240212230727_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
