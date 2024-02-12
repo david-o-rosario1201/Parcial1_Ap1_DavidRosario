@@ -1,0 +1,72 @@
+﻿@page "/Metas"
+@inject MetasService metasService
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+@inject NavigationManager navigation
+
+<PageTitle>Metas</PageTitle>
+<div class="container">
+	<div class="card shadow-lg">
+		@*Header*@
+		<div class="card-header">
+			<h3><strong>Metas</strong></h3>
+			<button type="button" class="btn btn-outline-primary" @onclick="IrACrear"><i class="bi bi-plus-circle"/> Crear</button>
+			<button type="button" class="btn btn-outline-info" @onclick="IrADetalles"><i class="bi bi-card-list"/> Detalles</button>
+		</div>
+		@*Body*@
+		<div class="card-body">
+			@if(metas.Count == 0)
+			{
+				<p><em>Cargando...</em></p>
+			}
+			else
+			{
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Meta Id</th>
+							<th>Fecha</th>
+							<th>Descripci&oacute;n</th>
+							<th>Monto</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach(var meta in metas)
+						{
+							<tr>
+								<td>@meta.MetaId</td>
+								<td>@meta.Fecha</td>
+								<td>@meta.Descripcion</td>
+								<td>@meta.Monto</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+		</div>
+		@*Footer*@
+		<div class="card-footer">
+			<p><strong>Total de Metas:</strong> @metas.Count</p>
+		</div>
+	</div>
+</div>
+
+@code {
+	public List<Metas> metas = new List<Metas>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await Task.Delay(500);
+		metas = await metasService.Listar(m => m.MetaId > 0);
+	}
+
+
+	public void IrACrear()
+	{
+		navigation.NavigateTo("/CreateMetas");
+	}
+	public void IrADetalles()
+	{
+		navigation.NavigateTo("/DetailsMetas");
+	}
+}
