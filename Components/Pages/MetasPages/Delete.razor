@@ -1,0 +1,76 @@
+﻿@page "/DeleteMetas"
+@page "/DeleteMetas/metaid={metaId:int}"
+@inject MetasService metasService
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+@inject NavigationManager navigation
+
+<PageTitle>Eliminar Meta</PageTitle>
+<EditForm Model="meta" OnValidSubmit="Eliminar">
+	<DataAnnotationsValidator />
+	<div class="container">
+		<div class="card shadow-lg">
+			@*Header*@
+			<div class="card-header">
+				<h3><strong>Eliminar Meta</strong></h3>
+			</div>
+			@*Body*@
+			<div class="card-body col-5">
+				<h3><strong>¿Éstas seguro de que quieres eliminar esta meta?</strong></h3>
+				@*Datos*@
+				<div class="mb-1">
+					<p class="mb-0">Meta Id: @meta.MetaId</p>
+				</div>
+				<div class="mb-1">
+					<p class="mb-0">Fecha: @meta.Fecha</p>
+				</div>
+				<div class="mb-1">
+					<p class="mb-0">Descripci&oacute;n: @meta.Descripcion</p>
+				</div>
+				<div class="mb-1">
+					<p class="mb-0">Monto: @meta.Monto</p>
+				</div>
+			</div>
+			@*Footer*@
+			<div class="card-footer d-flex justify-content-center">
+				<div class="px-2">
+					<button type="button" class="btn btn-outline-dark" @onclick="Volver"><i class="bi bi-box-arrow-left" /> Volver</button>
+				</div>
+				<button type="button" class="btn btn-outline-danger" @onclick="Eliminar"><i class="bi bi-trash3-fill" /> Eliminar</button>
+			</div>
+		</div>
+	</div>
+	@mensaje
+</EditForm>
+
+@code {
+	[Parameter]
+	public int metaId { get; set; }
+	public Metas meta { get; set; } = new Metas();
+	public string mensaje { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await Task.Delay(500);
+		if (metaId > 0)
+			meta = await metasService.Buscar(metaId);
+	}
+
+	public async Task Eliminar()
+	{
+		var eliminar = await metasService.Eliminar(meta);
+		if (eliminar)
+		{
+			mensaje = "La meta se eliminó con éxito";
+			await Task.Delay(2000);
+			Volver();
+		}
+		else
+			mensaje = "La meta no se ha podido eliminar correctamente";
+	}
+
+	public void Volver()
+	{
+		navigation.NavigateTo("/DetailsMetas");
+	}
+}
