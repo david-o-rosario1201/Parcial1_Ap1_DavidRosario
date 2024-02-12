@@ -1,0 +1,93 @@
+﻿@page "/EditMetas"
+@page "/EditMetas/metaid={metaId:int}"
+@inject MetasService metasService
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+@inject NavigationManager navigation
+
+<PageTitle>Editar Meta</PageTitle>
+<EditForm Model="meta" OnValidSubmit="Modificar">
+	<DataAnnotationsValidator />
+	<div class="container">
+		<div class="card shadow-lg">
+			@*Header*@
+			<div class="card-header">
+				<h3><strong>Editar Meta</strong></h3>
+			</div>
+			@*Body*@
+			<div class="card-body">
+				@*MetaId*@
+				<div class="mb-3">
+					<div class="col-4">
+						<label class="form-label" for="metaid"><strong>Meta Id:</strong></label>
+						<InputNumber id="metaid" class="form-control" @bind-Value="meta.MetaId"></InputNumber>
+					</div>
+				</div>
+				@*Fecha*@
+				<div class="mb-3">
+					<div class="col-4">
+						<label class="form-label" for="fecha"><strong>Fecha:</strong></label>
+						<InputDate id="fecha" class="form-control" @bind-Value="meta.Fecha"></InputDate>
+						<ValidationMessage For="@(() => meta.Fecha)"></ValidationMessage>
+					</div>
+				</div>
+				@*Descripción*@
+				<div class="mb-3">
+					<div class="col-4">
+						<label class="form-label" for="descripcion"><strong>Descripci&oacute;n:</strong></label>
+						<InputTextArea id="descripcion" class="form-control" @bind-Value="meta.Descripcion" placeholder="Ingrese una descripción"></InputTextArea>
+						<ValidationMessage For="@(() => meta.Descripcion)"></ValidationMessage>
+					</div>
+				</div>
+				@*Monto*@
+				<div class="mb-3">
+					<div class="col-4">
+						<label class="form-label" for="monto"><strong>Monto:</strong></label>
+						<InputNumber id="monto" class="form-control" @bind-Value="meta.Monto"></InputNumber>
+						<ValidationMessage For="@(() => meta.Monto)"></ValidationMessage>
+					</div>
+				</div>
+			</div>
+			@*Footer*@
+			<div class="card-footer d-flex justify-content-center">
+				<div class="px-2">
+					<button type="button" class="btn btn-outline-primary" @onclick="Volver"><i class="bi bi-box-arrow-left" /> Volver</button>
+				</div>
+				<button type="submit" class="btn btn-outline-success" @onclick="Modificar"><i class="bi bi-floppy-fill" /> Modificar</button>
+			</div>
+		</div>
+	</div>
+	@mensaje
+</EditForm>
+
+@code {
+	[Parameter]
+	public int metaId { get; set; }
+	public Metas meta { get; set; } = new Metas();
+	public string mensaje { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await Task.Delay(500);
+		if (metaId > 0)
+			meta = await metasService.Buscar(metaId);
+	}
+
+	public async Task Modificar()
+	{
+		var modificar = await metasService.Crear(meta);
+		if (modificar)
+		{
+			mensaje = "La meta se modificó con éxito";
+			await Task.Delay(2000);
+			Volver();
+		}
+		else
+			mensaje = "La meta no se ha podido modificar correctamente";
+	}
+
+	public void Volver()
+	{
+		navigation.NavigateTo("/DetailsMetas");
+	}
+}
