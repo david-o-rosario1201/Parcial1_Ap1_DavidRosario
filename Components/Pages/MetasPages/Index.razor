@@ -35,9 +35,9 @@
 						{
 							<tr>
 								<td>@meta.MetaId</td>
-								<td>@meta.Fecha</td>
+								<td>@meta.Fecha.ToShortDateString()</td>
 								<td>@meta.Descripcion</td>
-								<td>@meta.Monto</td>
+								<td>@meta.Monto.ToString("N2")</td>
 							</tr>
 						}
 					</tbody>
