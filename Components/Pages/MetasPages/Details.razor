@@ -36,9 +36,9 @@
 						{
 							<tr>
 								<td>@meta.MetaId</td>
-								<td>@meta.Fecha</td>
+								<td>@meta.Fecha.ToShortDateString()</td>
 								<td>@meta.Descripcion</td>
-								<td>@meta.Monto</td>
+								<td>@meta.Monto.ToString("N2")</td>
 								<td><button type="button" class="btn btn-outline-warning" @onclick="(e)=> IrAEditar(meta.MetaId)"><i class="bi bi-pencil-square" /></button></td>
 								<td><button type="button" class="btn btn-outline-danger" @onclick="(e)=> IrAEliminar(meta.MetaId)"><i class="bi bi-trash3-fill" /></button></td>
 							</tr>
