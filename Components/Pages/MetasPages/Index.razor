@@ -21,6 +21,46 @@
 			}
 			else
 			{
+				@*Fechas*@
+				<div class="mb-3">
+					<div class="row">
+						<div class="col-3">
+							<label class="form-label" for="desde"><strong>Desde:</strong></label>
+							<InputDate id="desde" class="form-control" @bind-Value="desde"></InputDate>
+						</div>
+						<div class="col-3">
+							<label class="form-label" for="hasta"><strong>Hasta:</strong></label>
+							<InputDate id="hasta" class="form-control" @bind-Value="hasta"></InputDate>
+						</div>
+					</div>
+				</div>
+
+				@*Campos a Filtrar*@
+				<div class="mb-3">
+					<div class="row align-items-center">
+						<label class="form-label" for="filtro"><strong>Campo a Filtrar:</strong></label>
+						<div class="col-3">
+							<InputSelect id="filtro" class="form-select" @bind-Value="filtro">
+								<option>Elige una opci&oacute;n</option>
+								<option value="id">Id</option>
+								<option value="descripcion">Descripci&oacute;n</option>
+							</InputSelect>
+						</div>
+						<div class="col-auto miFlecha">
+							<p>→</p>
+						</div>
+						<div class="col-4">
+							<div class="input-group">
+								<InputText class="form-control" @bind-Value="valorFiltro" placeholder="Ingrese un dato para filtrar"></InputText>
+								<button type="button" class="btn btn-outline-primary" @onclick="Buscar"><i class="bi bi-search" /></button>
+							</div>
+						</div>
+						<div class="col-3">
+							<button type="button" class="btn btn-outline-secondary" @onclick="Restablecer"><i class="bi bi-arrow-clockwise" /> Restablecer</button>
+						</div>
+					</div>
+				</div>
+
 				<table class="table">
 					<thead>
 						<tr>
@@ -50,14 +90,91 @@
 		</div>
 	</div>
 </div>
+@mensaje
 
 @code {
 	public List<Metas> metas = new List<Metas>();
+	public string filtro { get; set; }
+	public string valorFiltro { get; set; }
+	public string mensaje { get; set; }
+	public DateTime desde { get; set; } = DateTime.Today;
+	public DateTime hasta { get; set; } = DateTime.Today;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
 		metas = await metasService.Listar(m => m.MetaId > 0);
+	}
+
+	public async Task Buscar()
+	{
+		if (desde > hasta)
+		{
+			mensaje = "La fecha inicial no puede ser mayor a la fecha final";
+			await Task.Delay(3000);
+			return;
+		}
+
+		if (valorFiltro == null)
+		{
+			mensaje = "Debe ingresar un dato";
+			await Task.Delay(3000);
+			return;
+		}
+		List<Metas> filtradoList1 = new List<Metas>();
+		if (filtro == "id")
+		{
+			if (int.TryParse(valorFiltro, out int id))
+			{
+				var valor = filtradoList1 = await metasService.Listar(a => a.MetaId == id);
+				if (valor.Count != 0)
+					metas = valor;
+				else
+					mensaje = "Se encontraron resultados";
+			}
+			else
+			{
+				mensaje = "El valor ingresado para MetaId no es válido";
+				await Task.Delay(3000);
+			}
+		}
+		else if (filtro == "descripcion")
+		{
+			filtradoList1 = await metasService.Listar(a => a.Descripcion.ToLower().Contains(valorFiltro.ToLower()));
+			Filtrado(filtradoList1);
+		}
+		else
+		{
+			mensaje = "Debe elegir un método parar filtrar";
+			await Task.Delay(3000);
+		}
+	}
+
+	public async Task Restablecer()
+	{
+		metas = await metasService.Listar(a => a.MetaId > 0);
+		mensaje = "Lo datos fueron resstablecidos";
+	}
+
+	public async Task Filtrado(List<Metas> filtrados)
+	{
+		List<Metas> filtradoList2 = new List<Metas>();
+		foreach (var filtrado in filtrados)
+		{
+			if (filtrado.Fecha >= desde && filtrado.Fecha <= hasta)
+				filtradoList2.Add(filtrado);
+		}
+
+		if (filtradoList2.Count != 0)
+		{
+			metas = filtradoList2;
+			mensaje = "Se encontraron resultados";
+		}
+		else
+		{
+			mensaje = "No se encontraron resultados";
+			await Task.Delay(3000);
+		}
 	}
 
 
