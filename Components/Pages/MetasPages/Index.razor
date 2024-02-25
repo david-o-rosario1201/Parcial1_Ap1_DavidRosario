@@ -11,7 +11,6 @@
 		<div class="card-header">
 			<h3><strong>Metas</strong></h3>
 			<button type="button" class="btn btn-outline-primary" @onclick="IrACrear"><i class="bi bi-plus-circle"/> Crear</button>
-			<button type="button" class="btn btn-outline-info" @onclick="IrADetalles"><i class="bi bi-card-list"/> Detalles</button>
 		</div>
 		@*Body*@
 		<div class="card-body">
@@ -68,6 +67,9 @@
 							<th>Fecha</th>
 							<th>Descripci&oacute;n</th>
 							<th>Monto</th>
+							<th>Ver</th>
+							<th>Editar</th>
+							<th>Eliminar</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -78,6 +80,9 @@
 								<td>@meta.Fecha.ToShortDateString()</td>
 								<td>@meta.Descripcion</td>
 								<td>@meta.Monto.ToString("N2")</td>
+								<td><button type="button" class="btn btn-outline-info" @onclick="(e)=> IrADetalles(meta.MetaId)"><i class="bi bi-eye" /></button></td>
+								<td><button type="button" class="btn btn-outline-warning" @onclick="(e)=> IrAEditar(meta.MetaId)"><i class="bi bi-pencil-square" /></button></td>
+								<td><button type="button" class="btn btn-outline-danger" @onclick="(e)=> IrAEliminar(meta.MetaId)"><i class="bi bi-trash3-fill" /></button></td>
 							</tr>
 						}
 					</tbody>
@@ -182,8 +187,16 @@
 	{
 		navigation.NavigateTo("/CreateMetas");
 	}
-	public void IrADetalles()
+	public void IrADetalles(int id)
 	{
-		navigation.NavigateTo("/DetailsMetas");
+		navigation.NavigateTo($"/DetailsMetas/metaId={id}");
+	}
+	public void IrAEditar(int id)
+	{
+		navigation.NavigateTo($"/EditMetas/metaId={id}");
+	}
+	public void IrAEliminar(int id)
+	{
+		navigation.NavigateTo($"/DeleteMetas/metaId={id}");
 	}
 }
