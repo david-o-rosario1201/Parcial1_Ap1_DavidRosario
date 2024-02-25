@@ -1,66 +1,50 @@
 ﻿@page "/DetailsMetas"
+@page "/DetailsMetas/metaId={metaId:int}"
 @inject MetasService metasService
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 @inject NavigationManager navigation
 
-<PageTitle>Detalles de Metas</PageTitle>
+<PageTitle>Detalle de Meta</PageTitle>
 <div class="container">
 	<div class="card shadow-lg">
 		@*Header*@
 		<div class="card-header">
-			<h3><strong>Detalles de Metas</strong></h3>
-			<button type="button" class="btn btn-outline-primary" @onclick="Volver"><i class="bi bi-box-arrow-left" /> Volver</button>
+			<h3><strong>Detalle de Meta</strong></h3>
 		</div>
 		@*Body*@
 		<div class="card-body">
-			@if (metas.Count == 0)
-			{
-				<p><em>Cargando...</em></p>
-			}
-			else
-			{
-				<table class="table">
-					<thead>
-						<tr>
-							<th>Meta Id</th>
-							<th>Fecha</th>
-							<th>Descripci&oacute;n</th>
-							<th>Monto</th>
-							<th>Editar</th>
-							<th>Eliminar</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var meta in metas)
-						{
-							<tr>
-								<td>@meta.MetaId</td>
-								<td>@meta.Fecha.ToShortDateString()</td>
-								<td>@meta.Descripcion</td>
-								<td>@meta.Monto.ToString("N2")</td>
-								<td><button type="button" class="btn btn-outline-warning" @onclick="(e)=> IrAEditar(meta.MetaId)"><i class="bi bi-pencil-square" /></button></td>
-								<td><button type="button" class="btn btn-outline-danger" @onclick="(e)=> IrAEliminar(meta.MetaId)"><i class="bi bi-trash3-fill" /></button></td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			}
+			@*Datos*@
+			<div class="mb-1">
+				<p class="mb-0">Meta Id: @meta.MetaId</p>
+			</div>
+			<div class="mb-1">
+				<p class="mb-0">Fecha: @meta.Fecha</p>
+			</div>
+			<div class="mb-1">
+				<p class="mb-0">Descripci&oacute;n: @meta.Descripcion</p>
+			</div>
+			<div class="mb-1">
+				<p class="mb-0">Monto: @meta.Monto</p>
+			</div>
 		</div>
 		@*Footer*@
-		<div class="card-footer">
-			<p><strong>Total de Metas:</strong> @metas.Count</p>
+		<div class="card-footer d-flex justify-content-center">
+			<button type="button" class="btn btn-outline-primary" @onclick="Volver"><i class="bi bi-box-arrow-left" /> Volver</button>
 		</div>
 	</div>
 </div>
 
 @code {
-	public List<Metas> metas = new List<Metas>();
+	[Parameter]
+	public int metaId { get; set; }
+	public Metas meta { get; set; } = new Metas();
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
-		metas = await metasService.Listar(m => m.MetaId > 0);
+		if (metaId > 0)
+			meta = await metasService.Buscar(metaId);
 	}
 
 

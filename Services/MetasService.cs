@@ -51,6 +51,14 @@ namespace Parcial1_Ap1_DavidRosario.Services
 				.Where(m => m.MetaId == id)
 				.FirstOrDefaultAsync();
 		}
+
+		public async Task<Metas?> BuscarDescripcion(string descripcion)
+		{
+			return await _contexto.Metas
+				.AsNoTracking()
+				.Where(m => m.Descripcion == descripcion)
+				.FirstOrDefaultAsync();
+		}
 		public async Task<List<Metas>> Listar(Expression<Func<Metas,bool>> criterio)
 		{
 			return await _contexto.Metas

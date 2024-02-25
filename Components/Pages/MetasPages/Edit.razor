@@ -65,29 +65,53 @@
 	public int metaId { get; set; }
 	public Metas meta { get; set; } = new Metas();
 	public string mensaje { get; set; }
+	public string descripcionActual { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
 		await Task.Delay(500);
 		if (metaId > 0)
+		{
 			meta = await metasService.Buscar(metaId);
+			descripcionActual = meta.Descripcion;
+		}
+
 	}
 
 	public async Task Modificar()
 	{
-		var modificar = await metasService.Crear(meta);
-		if (modificar)
+		if(!await Validar())
 		{
-			mensaje = "La meta se modificó con éxito";
-			await Task.Delay(2000);
-			Volver();
+			var modificar = await metasService.Crear(meta);
+			if (modificar)
+			{
+				mensaje = "La meta se modificó con éxito";
+				await Task.Delay(2000);
+				Volver();
+			}
+			else
+				mensaje = "La meta no se ha podido modificar correctamente";
 		}
 		else
-			mensaje = "La meta no se ha podido modificar correctamente";
+			mensaje = "Ya existe una meta con esta descripción";
+	}
+
+	public async Task<bool> Validar()
+	{
+		var validar = await metasService.BuscarDescripcion(meta.Descripcion);
+		if (validar is not null)
+		{
+			if (validar.Descripcion == descripcionActual)
+				return false;
+			else
+				return true;
+		}
+		else
+			return false;
 	}
 
 	public void Volver()
 	{
-		navigation.NavigateTo("/DetailsMetas");
+		navigation.NavigateTo("/Metas");
 	}
 }

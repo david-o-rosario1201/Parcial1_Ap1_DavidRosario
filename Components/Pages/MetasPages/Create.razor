@@ -63,23 +63,31 @@
 	public Metas meta { get; set; } = new Metas();
 	public string mensaje { get; set; }
 
-	// protected override async Task OnInitializedAsync()
-	// {
-	// 	await Task.Delay(500);
-	// 	metas = await metasService.Listar(m => m.MetaId > 0);
-	// }
-
 	public async Task Crear()
 	{
-		var crear = await metasService.Crear(meta);
-		if(crear)
+		if(!await Validar())
 		{
-			mensaje = "La meta se creó con éxito";
-			await Task.Delay(2000);
-			LimpiarPantalla();
+			var crear = await metasService.Crear(meta);
+			if (crear)
+			{
+				mensaje = "La meta se creó con éxito";
+				await Task.Delay(2000);
+				LimpiarPantalla();
+			}
+			else
+				mensaje = "La meta no se ha podido crear correctamente";
 		}
 		else
-			mensaje = "La meta no se ha podido crear correctamente";
+			mensaje = "Ya existe una meta con esta descripción";
+	}
+
+	public async Task<bool> Validar()
+	{
+		var validar = await metasService.BuscarDescripcion(meta.Descripcion);
+		if (validar is not null)
+			return true;
+		else
+			return false;
 	}
 
 	public void LimpiarPantalla()
